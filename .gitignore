@@ -1,0 +1,11 @@
+# Temporary & test files
+_m.html
+_p.html
+backup/
+backup2/
+.freebuff/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

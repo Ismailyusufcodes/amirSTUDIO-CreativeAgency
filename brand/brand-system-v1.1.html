@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>amirSTUDIO™ — Brand &amp; Interface System v1.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link href="fonts.css" rel="stylesheet">
+<style>
+  @page{ size:A4; margin:0 }
+  :root{
+    --paper:#f5f5f3; --lime:#d2e823; --lavender:#e9c0e9; --cobalt:#2665d6;
+    --maroon:#780016; --leaf:#ebffc5; --sage:#676b5f; --forest:#254f1a;
+    --mustard:#d6a337; --midnight:#1e2330;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#dcdcd8}
+  body{
+    font-family:'Inter',-apple-system,'Segoe UI',sans-serif;color:#000;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    font-size:9pt;line-height:1.55
+  }
+  .page{
+    position:relative;width:210mm;height:296.6mm;background:var(--paper);
+    padding:15mm 16mm 16mm;overflow:hidden;
+    break-after:page;page-break-after:always
+  }
+  .page:last-child{break-after:auto;page-break-after:auto}
+  .page.dark{background:#000;color:#f5f5f3}
+
+  /* --- running head / foot --- */
+  .run{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:7.2pt;letter-spacing:.02em;font-weight:600;opacity:.7;
+    padding-bottom:2.6mm;border-bottom:1px solid rgba(0,0,0,.18);margin-bottom:7mm}
+  .dark .run{border-bottom-color:rgba(255,255,255,.22)}
+  .foot{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;
+    font-size:7.2pt;letter-spacing:.02em;font-weight:600;opacity:.7}
+
+  /* --- type --- */
+  .kicker{font-size:7.4pt;letter-spacing:.02em;font-weight:600;opacity:.7;margin-bottom:2.5mm}
+  h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;margin:0}
+  h1{font-size:44pt;font-weight:700;letter-spacing:-.045em;line-height:.94}
+  h2{font-size:26pt;font-weight:700;letter-spacing:-.038em;line-height:.98}
+  h3{font-size:13pt;font-weight:700;letter-spacing:-.025em;line-height:1.1}
+  h4{font-size:9.5pt;font-weight:700;letter-spacing:-.01em;line-height:1.2;margin-bottom:1.4mm}
+  p{margin:0 0 3mm}
+  .lead{font-size:11pt;line-height:1.42;letter-spacing:-.02em;max-width:150mm}
+  .small{font-size:7.8pt;line-height:1.5}
+  .mono{font-family:ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:7.4pt;letter-spacing:-.01em}
+  .muted{opacity:.7}
+
+  .rule{height:2px;background:#000;margin:6mm 0}
+  .rule-thin{height:1px;background:rgba(0,0,0,.18);margin:5mm 0}
+
+  /* --- brand mark --- */
+  .mark{display:flex;align-items:flex-start;gap:1.4mm;font-family:'Space Grotesk',sans-serif;
+    font-weight:700;line-height:1;letter-spacing:-.02em}
+  .mark .m1{font-size:7pt;letter-spacing:.06em;align-self:center}
+  .mark .m2{font-size:14pt}
+  .mark .m3{font-size:7pt;align-self:flex-start;margin-top:.4mm}
+  .mark-tag{display:block;font-size:7pt;letter-spacing:.02em;opacity:.7;margin-top:1mm}
+
+  /* --- layout helpers --- */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+  .mt{margin-top:7mm}
+  .mt-s{margin-top:4mm}
+
+  /* --- swatches --- */
+  .sw{border:2px solid #000;border-radius:6mm;padding:3.4mm;height:33mm;
+    display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .sw .name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:9pt;letter-spacing:-.02em}
+  .sw .hex{font-family:ui-monospace,Consolas,monospace;font-size:7pt;letter-spacing:.04em}
+  .sw .role{font-size:7pt;line-height:1.35;letter-spacing:.01em;max-width:28mm}
+  .sw.tall{height:40mm}
+  .sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+
+  /* --- band rows (chameleon) --- */
+  .band-row{display:flex;align-items:center;justify-content:space-between;gap:6mm;
+    border:2px solid #000;border-radius:5mm;padding:3.2mm 5mm;margin-bottom:2.6mm}
+  .band-row .b-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:10pt;letter-spacing:-.02em}
+  .band-row .b-hex{font-family:ui-monospace,Consolas,monospace;font-size:7pt}
+  .band-row .b-ink{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:8.5pt;letter-spacing:.02em}
+  .band-row .ratio{font-size:7pt;font-weight:600;letter-spacing:.02em}
+
+  /* --- tables --- */
+  table{width:100%;border-collapse:collapse;font-size:7.6pt;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:700;font-size:7.2pt;letter-spacing:.02em;
+    padding:0 0 1.6mm;border-bottom:2px solid #000}
+  td{padding:1.9mm 0;border-bottom:1px solid rgba(0,0,0,.14);vertical-align:top}
+  td.mono,th.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:0}
+  tr:last-child td{border-bottom:none}
+
+  /* --- cards --- */
+  .card{border:2px solid #000;border-radius:8mm;padding:5mm;background:#fff}
+  .card.tint{background:transparent}
+  .card .num{font-family:'Space Grotesk',sans-serif;font-size:7pt;font-weight:700;letter-spacing:.16em;opacity:.4;margin-bottom:3mm}
+
+  /* --- components --- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;font-weight:600;letter-spacing:-.01em;
+    border:2px solid #000;border-radius:4mm;text-decoration:none;color:#000}
+  .btn-lime{background:var(--lime);font-size:15pt;padding:4mm 8mm}
+  .btn-ghost{background:transparent;font-size:8pt;padding:2.6mm 5.4mm}
+  .chip{display:inline-flex;align-items:center;gap:2mm;border:2px solid #000;border-radius:99px;
+    padding:1.6mm 3.4mm;font-size:7pt;font-weight:600;letter-spacing:.02em}
+  .pill-icon{width:11mm;height:11mm;border-radius:99px;border:2px solid currentColor;
+    display:grid;place-items:center;font-size:11pt;line-height:1}
+  .mock{border:2px solid #000;border-radius:8mm;padding:5mm;background:#fff;height:100%}
+  .mock-label{font-size:7.2pt;font-weight:700;letter-spacing:.02em;opacity:.7;margin-bottom:3mm}
+
+  /* --- timeline --- */
+  .tl{display:flex;border:2px solid #000;border-radius:4mm;overflow:hidden;height:15mm;margin:4mm 0 2mm}
+  .tl div{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:7pt;font-weight:700;letter-spacing:.02em;line-height:1.2;padding:0 2mm}
+  .tl .t1{flex:115;background:var(--paper)}
+  .tl .t2{flex:105;background:var(--lavender)}
+  .tl .t3{flex:60;background:var(--cobalt);color:#fff}
+  .tl .t4{flex:88;background:var(--maroon);color:#fff}
+  .tl-scale{display:flex;justify-content:space-between;font-size:7pt;font-weight:600;
+    letter-spacing:.02em;opacity:.7;margin-bottom:6mm}
+
+  /* --- lists --- */
+  ul.clean{list-style:none;margin:0;padding:0}
+  ul.clean li{position:relative;padding-left:5.5mm;margin-bottom:2.4mm;font-size:8pt;line-height:1.45}
+  ul.clean li::before{content:"";position:absolute;left:0;top:1.5mm;width:2.6mm;height:2.6mm;
+    border:1.4px solid #000;border-radius:1px;background:transparent}
+  ul.clean li.on::before{background:#000}
+  .dot-list{list-style:none;margin:0;padding:0}
+  .dot-list li{position:relative;padding-left:4mm;margin-bottom:1.8mm;font-size:8pt;line-height:1.45}
+  .dot-list li::before{content:"";position:absolute;left:0;top:2.2mm;width:1.6mm;height:1.6mm;border-radius:50%;background:#000}
+
+  /* --- do / don't --- */
+  .dd{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+  .dd .col{border:2px solid #000;border-radius:6mm;overflow:hidden;background:#fff}
+  .dd .hd{font-size:7.6pt;letter-spacing:.02em;font-weight:700;
+    padding:2mm 4mm;border-bottom:2px solid #000}
+  .dd .do .hd{background:var(--lime)}
+  .dd .dont .hd{background:#000;color:#f5f5f3}
+  .dd .bd{padding:4mm}
+  .dd .bd li{font-size:7.6pt;line-height:1.4;margin-bottom:2mm;padding-left:4mm;position:relative;list-style:none}
+  .dd .bd li::before{position:absolute;left:0;font-weight:700}
+  .do .bd li::before{content:"+"}
+  .dont .bd li::before{content:"–"}
+
+  /* --- code --- */
+  .code{font-family:ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:7pt;line-height:1.62;
+    background:#fff;border:2px solid #000;border-radius:5mm;padding:4mm 5mm;white-space:pre-wrap;letter-spacing:-.01em}
+
+  /* --- cover --- */
+  .cover{padding:0;background:var(--paper)}
+  .cover .frame{position:absolute;inset:8mm;border:2px solid #000;border-radius:9mm;overflow:hidden}
+  .cover .inner{position:absolute;inset:0;padding:14mm 15mm;display:flex;flex-direction:column}
+  .cover .top{display:flex;justify-content:space-between;align-items:flex-start}
+  .cover .mid{margin-top:auto;margin-bottom:auto}
+  .cover h1{font-size:62pt;letter-spacing:-.05em;line-height:.88}
+  .cover .sub{font-size:11pt;letter-spacing:-.02em;max-width:95mm;margin-top:6mm;line-height:1.4}
+  .cover .chips{display:flex;gap:2mm;margin-top:6mm}
+  .cover .chips span{height:9mm;flex:1;border:2px solid #000;border-radius:2.5mm}
+  .cover .meta{display:flex;justify-content:space-between;font-size:7.2pt;letter-spacing:.02em;font-weight:600;opacity:.7;margin-top:5mm}
+
+  /* --- contents --- */
+  .toc{display:grid;grid-template-columns:1fr 1fr;gap:0 10mm}
+  .toc a{display:flex;align-items:baseline;gap:3mm;text-decoration:none;color:#000;
+    padding:3.4mm 0;border-bottom:1px solid rgba(0,0,0,.14)}
+  .toc .n{font-family:ui-monospace,Consolas,monospace;font-size:7.4pt;opacity:.7;width:7mm}
+  .toc .t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:10.5pt;letter-spacing:-.02em}
+  .toc .p{margin-left:auto;font-size:7.4pt;opacity:.7;font-variant-numeric:tabular-nums}
+
+  .kpi{display:flex;gap:5mm;margin-top:6mm}
+  .kpi div{flex:1;border-top:2px solid #000;padding-top:2.5mm}
+  .kpi b{display:block;font-family:'Space Grotesk',sans-serif;font-size:17pt;letter-spacing:-.03em;line-height:1}
+  .kpi span{font-size:7.4pt;letter-spacing:.02em;opacity:.7;font-weight:600}
+
+  .spec{border:2px solid #000;border-radius:7mm;background:#fff;padding:6mm;margin-top:5mm}
+  .spec .big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34pt;letter-spacing:-.045em;line-height:.94}
+  .spec .alpha{display:flex;gap:3mm;margin-top:4mm;font-family:'Space Grotesk',sans-serif;font-weight:700}
+  .spec .alpha span{font-size:20pt;letter-spacing:-.03em}
+  @media screen{.page{margin:0 auto 8mm}}
+  @media print{.page{margin:0}}
+  .mock[style*="2665d6"] .mock-label{opacity:.9}
+</style>
+</head>
+<body>
+<main>
+
+<!-- ============================ 01 COVER ============================ -->
+<section class="page cover">
+  <div class="frame">
+    <div class="inner">
+      <div class="top">
+        <div>
+          <div class="mark"><span class="m1">amir</span><span class="m2">STUDIO</span><span class="m3">™</span></div>
+          <span class="mark-tag">Creative Agency</span>
+        </div>
+        <div style="text-align:right">
+          <div class="kicker" style="margin:0">Brand &amp; Interface System</div>
+          <div class="small muted">Version 1.1</div>
+        </div>
+      </div>
+
+      <div class="mid">
+        <h1>The<br>amirSTUDIO<br>System.</h1>
+        <p class="sub">Colour, type, shape and motion — the decisions behind the site, written down so they can be repeated on purpose.</p>
+        <div class="chips">
+          <span style="background:#f5f5f3"></span>
+          <span style="background:#e9c0e9"></span>
+          <span style="background:#780016"></span>
+          <span style="background:#2665d6"></span>
+          <span style="background:#ebffc5"></span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <span>October 2026 · Twelve pages</span>
+        <span>Studio internal / client shareable</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 02 CONTENTS ============================ -->
+<section class="page">
+  <div class="run"><span>amirSTUDIO™ — Brand &amp; Interface System</span><span>Contents</span></div>
+  <h2>What's inside.</h2>
+  <p class="lead mt-s">A working manual, not a mood board. Every value here exists in the site today; every rule here is a rule the site already follows.</p>
+
+  <div class="toc mt">
+    <a href="#p3"><span class="n">01</span><span class="t">Foundation</span><span class="p">03</span></a>
+    <a href="#p4"><span class="n">02</span><span class="t">Colour</span><span class="p">04</span></a>
+    <a href="#p5"><span class="n">03</span><span class="t">The chameleon rule</span><span class="p">05</span></a>
+    <a href="#p6"><span class="n">04</span><span class="t">Typography</span><span class="p">06</span></a>
+    <a href="#p7"><span class="n">05</span><span class="t">Layout &amp; rhythm</span><span class="p">07</span></a>
+    <a href="#p8"><span class="n">06</span><span class="t">Shape &amp; elevation</span><span class="p">08</span></a>
+    <a href="#p9"><span class="n">07</span><span class="t">Components</span><span class="p">09</span></a>
+    <a href="#p10"><span class="n">08</span><span class="t">Motion</span><span class="p">10</span></a>
+    <a href="#p11"><span class="n">09</span><span class="t">Chrome &amp; navigation</span><span class="p">11</span></a>
+    <a href="#p12"><span class="n">10</span><span class="t">Tokens &amp; access</span><span class="p">12</span></a>
+  </div>
+
+  <div class="rule-thin mt"></div>
+  <div class="cols">
+    <div>
+      <h4>How to use this document</h4>
+      <p class="small">Designers: copy the token block on page 12 before you draw anything. Developers: the CSS variables and the <span class="mono">ink()</span> function are the source of truth — if a new component disagrees with them, the component is wrong.</p>
+    </div>
+    <div>
+      <h4>What this replaces</h4>
+      <p class="small">DESIGN.md is the external reference study (the “bento” language). This book is the studio's own resolution of it: the values we actually shipped, the pieces we changed, and the rules we hold ourselves to.</p>
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div><b>5</b><span>Colour bands</span></div>
+    <div><b>12</b><span>Colours</span></div>
+    <div><b>2</b><span>Typefaces</span></div>
+    <div><b>0</b><span>Drop shadows</span></div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>02 / 12</span></div>
+</section>
+
+<!-- ============================ 03 FOUNDATION ============================ -->
+<section class="page" id="p3">
+  <div class="run"><span>01 — Foundation</span><span>Brand &amp; Interface System</span></div>
+  <h2>Confident. Playful.<br>Precise.</h2>
+  <p class="lead mt-s">The studio makes premium work for small teams. The system has to feel expensive without feeling cold — so it pairs editorial restraint with pop-art nerve.</p>
+
+  <div class="cols3 mt">
+    <div class="card">
+      <h4>Confident</h4>
+      <p class="small">One idea per screen. Huge type, short lines, no hedging. If a sentence needs a second clause to survive, it gets cut.</p>
+    </div>
+    <div class="card">
+      <h4>Playful</h4>
+      <p class="small">Colour does the entertaining. Full-bleed bands, sticker outlines, a music button that wears whatever colour the page is wearing.</p>
+    </div>
+    <div class="card">
+      <h4>Precise</h4>
+      <p class="small">Nothing decorative for the sake of it. Every card is a grid cell, every animation is a beat, every colour is a role.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt"></div>
+
+  <div class="cols">
+    <div>
+      <h4>Voice</h4>
+      <p class="small">First person, present tense, declarative. The studio speaks as “I” in headlines and “we” in service copy. Sentence case. Full stops. No exclamation marks — the colour already shouted.</p>
+      <div class="mt-s" style="border-left:2px solid #000;padding-left:4mm">
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12pt;letter-spacing:-.03em;margin:0 0 2mm">Design that earns its place.</p>
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12pt;letter-spacing:-.03em;margin:0">Nothing decorative for the sake of it.</p>
+      </div>
+    </div>
+    <div>
+      <h4>Personality in one line</h4>
+      <p class="small">A studio that treats a website like a physical object: printed, cut out, and stuck down with real ink outlines.</p>
+      <h4 class="mt-s">Never</h4>
+      <ul class="dot-list">
+        <li>Gradients, glows, or soft shadows</li>
+        <li>Grey-on-grey “premium” minimalism</li>
+        <li>Stock photography of laptops</li>
+        <li>More than one loud accent per screen</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>03 / 12</span></div>
+</section>
+
+<!-- ============================ 04 COLOUR ============================ -->
+<section class="page" id="p4">
+  <div class="run"><span>02 — Colour</span><span>Brand &amp; Interface System</span></div>
+  <h2>One loud accent.<br>Five full bands.</h2>
+  <p class="lead mt-s">Each section owns one colour and fills the entire viewport with it. Ink is the only structural colour; lime is the only action colour.</p>
+
+  <div class="sw-grid mt">
+    <div class="sw tall" style="background:#f5f5f3"><div class="name">Paper</div><div><div class="hex">#F5F5F3</div><div class="role">Page base · Home section</div></div></div>
+    <div class="sw tall" style="background:#000;color:#f5f5f3"><div class="name">Ink</div><div><div class="hex">#000000</div><div class="role">Type, strokes, focus</div></div></div>
+    <div class="sw tall" style="background:#d2e823"><div class="name">Lime</div><div><div class="hex">#D2E823</div><div class="role">Primary action only</div></div></div>
+    <div class="sw tall" style="background:#e9c0e9"><div class="name">Lavender</div><div><div class="hex">#E9C0E9</div><div class="role">About band</div></div></div>
+  </div>
+  <div class="sw-grid mt-s">
+    <div class="sw tall" style="background:#780016;color:#fff"><div class="name">Maroon</div><div><div class="hex">#780016</div><div class="role">Works band</div></div></div>
+    <div class="sw tall" style="background:#2665d6;color:#fff"><div class="name">Cobalt</div><div><div class="hex">#2665D6</div><div class="role">3D scene band</div></div></div>
+    <div class="sw tall" style="background:#ebffc5"><div class="name">Leaf</div><div><div class="hex">#EBFFC5</div><div class="role">Contact band</div></div></div>
+    <div class="sw tall" style="background:#fff"><div class="name">White</div><div><div class="hex">#FFFFFF</div><div class="role">Card surfaces</div></div></div>
+  </div>
+
+  <div class="rule-thin mt"></div>
+  <div class="cols">
+    <div>
+      <h4>Support colours</h4>
+      <div style="display:flex;gap:2mm;margin-bottom:2mm">
+        <div style="flex:1;height:8mm;background:#676b5f;border:2px solid #000;border-radius:2mm"></div>
+        <div style="flex:1;height:8mm;background:#254f1a;border:2px solid #000;border-radius:2mm"></div>
+        <div style="flex:1;height:8mm;background:#d6a337;border:2px solid #000;border-radius:2mm"></div>
+        <div style="flex:1;height:8mm;background:#1e2330;border:2px solid #000;border-radius:2mm"></div>
+      </div>
+      <p class="small mono">Sage #676B5F · Forest #254F1A · Mustard #D6A337 · Midnight #1E2330</p>
+      <p class="small">All four are card and accent fills only — never text, never an action colour. Sage fails 4.5 : 1 on three of five bands, so muted copy is ink at 70% instead.</p>
+    </div>
+    <div>
+      <h4>Rules</h4>
+      <ul class="clean">
+        <li class="on">Lime never fills chrome, navigation, or decoration. It is the primary action and nothing else: as a ring it fails 3 : 1 on Paper, Lavender and Leaf.</li>
+        <li class="on">No two bands of the same colour are ever adjacent.</li>
+        <li class="on">Strokes are pure ink. Muted text is ink at 70% (90% on Cobalt) — never lower, never a flat grey.</li>
+        <li class="on">No gradients. A band is one flat colour, edge to edge.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>04 / 12</span></div>
+</section>
+
+<!-- ============================ 05 CHAMELEON ============================ -->
+<section class="page" id="p5">
+  <div class="run"><span>03 — The chameleon rule</span><span>Brand &amp; Interface System</span></div>
+  <h2>Colour follows<br>the scroll.</h2>
+  <p class="lead mt-s">The interface is never a fixed colour. Every band publishes the colour it is wearing, and the fixed chrome — music button, menu button, menu row — reads it and repaints.</p>
+
+  <div class="mt">
+    <div class="band-row" style="background:#f5f5f3"><span class="b-name">01 · Home</span><span class="b-hex">#F5F5F3</span><span class="b-ink" style="color:#000">INK #000</span><span class="ratio">19.2 : 1</span><span class="ratio">muted 70%</span></div>
+    <div class="band-row" style="background:#e9c0e9"><span class="b-name">02 · About</span><span class="b-hex">#E9C0E9</span><span class="b-ink" style="color:#000">INK #000</span><span class="ratio">13.2 : 1</span><span class="ratio">muted 70%</span></div>
+    <div class="band-row" style="background:#780016;color:#fff"><span class="b-name">03 · Our Works</span><span class="b-hex">#780016</span><span class="b-ink">INK #FFF</span><span class="ratio">11.6 : 1</span><span class="ratio">muted 70%</span></div>
+    <div class="band-row" style="background:#2665d6;color:#fff"><span class="b-name">04 · 3D Scene</span><span class="b-hex">#2665D6</span><span class="b-ink">INK #FFF</span><span class="ratio">5.4 : 1</span><span class="ratio">muted 90%</span></div>
+    <div class="band-row" style="background:#ebffc5"><span class="b-name">05 · Work With Us</span><span class="b-hex">#EBFFC5</span><span class="b-ink" style="color:#000">INK #000</span><span class="ratio">19.6 : 1</span><span class="ratio">muted 70%</span></div>
+  </div>
+
+  <div class="cols mt-s">
+    <div>
+      <h4>The mechanism</h4>
+      <p class="small">Each band declares <span class="mono">data-bg</span>. On entry the deck writes it to two custom properties and every fixed element inherits them:</p>
+      <div class="code">--chrome-bg : the band colour
+--chrome-fg : black or white, by luminance
+
+.music, .burger {
+  background: var(--chrome-bg);
+  color:      var(--chrome-fg);
+}</div>
+    </div>
+    <div>
+      <h4>The threshold</h4>
+      <p class="small">Ink flips at relative luminance <span class="mono">0.179</span>, the point where black and white give equal contrast. Black above, white below: every band gets whichever ink reads better.</p>
+      <p class="small" style="margin-top:3mm"><b>Why 0.179, not 0.45.</b> The old line sent Mustard (L = 0.408) to white ink at 2.3 : 1. At 0.179 it resolves to black at 9.2 : 1, so no band needs a manual override.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt"></div>
+  <div class="cols3">
+    <div><h4>Never hardcode</h4><p class="small">Chrome never names a colour. It asks the band. Adding a sixth band requires no CSS for the chrome at all.</p></div>
+    <div><h4>Never invert alone</h4><p class="small">When a control is “on”, it swaps the pair — fill becomes ink, ink becomes fill. It never introduces a third colour.</p></div>
+    <div><h4>Always test both</h4><p class="small">Every chrome state is reviewed on all five bands before it ships. A control that only works on Paper is not finished.</p></div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>05 / 12</span></div>
+</section>
+
+<!-- ============================ 06 TYPE ============================ -->
+<section class="page" id="p6">
+  <div class="run"><span>04 — Typography</span><span>Brand &amp; Interface System</span></div>
+  <h2>Two voices.<br>Tight tracking.</h2>
+  <p class="lead mt-s">Space Grotesk speaks; Inter explains. Headlines are set as shapes, not sentences, and tracking goes negative as the size goes up.</p>
+
+  <div class="spec">
+    <div class="big">I Design<br>Digital<br>Experiences.</div>
+    <div class="small" style="margin-top:4mm">Space Grotesk 700 · 144px max · −0.04em · line-height 0.90</div>
+  </div>
+
+  <div class="cols mt-s">
+    <div>
+      <h4>Space Grotesk — display</h4>
+      <p class="small">Headlines, section titles, card titles, prices, menu rows. Weight 700 only — the heaviest cut Space Grotesk ships. Negative tracking from −0.02em at 16px to −0.045em at 62pt.</p>
+    </div>
+    <div>
+      <h4>Inter — interface</h4>
+      <p class="small">Body, labels, buttons, footnotes, metadata. Weights 400 and 600. Labels are sentence case at +0.02em; wide-tracked caps at 12px hurt legibility.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+
+  <table>
+    <thead><tr><th scope="col">Role</th><th scope="col">Face</th><th scope="col">Weight</th><th scope="col">Size</th><th scope="col">Tracking</th><th scope="col">Leading</th></tr></thead>
+    <tbody>
+      <tr><td>Hero</td><td>Space Grotesk</td><td>700</td><td class="mono">clamp(2rem, min(8vw,14vh), 9rem)</td><td class="mono">−0.04em</td><td>0.90</td></tr>
+      <tr><td>Display</td><td>Space Grotesk</td><td>700</td><td class="mono">clamp(2rem, min(5.4vw,8.6vh), 5rem)</td><td class="mono">−0.043em</td><td>1.00</td></tr>
+      <tr><td>Card title</td><td>Space Grotesk</td><td>700</td><td class="mono">clamp(19px, min(1.7vw,2.6vh), 24px)</td><td class="mono">−0.024em</td><td>1.20</td></tr>
+      <tr><td>Lead</td><td>Inter</td><td>400</td><td class="mono">clamp(1.05rem, min(1.4vw,2.2vh), 1.375rem)</td><td class="mono">−0.02em</td><td>1.55</td></tr>
+      <tr><td>Body</td><td>Inter</td><td>400</td><td class="mono">clamp(.95rem, min(1.1vw,1.9vh), 1.125rem)</td><td class="mono">−0.01em</td><td>1.60</td></tr>
+      <tr><td>Primary button</td><td>Inter</td><td>600</td><td class="mono">32px</td><td class="mono">−0.01em</td><td>1.00</td></tr>
+      <tr><td>Label / meta</td><td>Inter</td><td>600</td><td class="mono">12px</td><td class="mono">+0.02em</td><td>1.00</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cols mt-s">
+    <div><h4>Optical notes</h4><p class="small">Tight tracking only works above 20px. Below that, −0.01em is the floor — anything tighter starts to collide. Cap body lines at 70 characters.</p></div>
+    <div><h4>Hierarchy</h4><p class="small">Three weights per screen: display 700, body 400, label and button 600. Emphasis comes from scale and colour, not from bolding.</p></div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>06 / 12</span></div>
+</section>
+
+<!-- ============================ 07 LAYOUT ============================ -->
+<section class="page" id="p7">
+  <div class="run"><span>05 — Layout &amp; rhythm</span><span>Brand &amp; Interface System</span></div>
+  <h2>One section.<br>One screen.</h2>
+  <p class="lead mt-s">The site is a deck, not a page. Each band is exactly one viewport tall and snaps; there is no in-between state where two sections share the screen.</p>
+
+  <div class="cols mt">
+    <div>
+      <h4>Deck</h4>
+      <p class="small">A single scroll container with <span class="mono">scroll-snap-type: y mandatory</span> and <span class="mono">scroll-snap-stop: always</span>. Sections are <span class="mono">100dvh</span>, so mobile chrome can never crop the composition.</p>
+      <h4 class="mt-s">Gutters</h4>
+      <p class="small">5vw on every side, every breakpoint. Content is capped at 1200px and centred, so the same composition survives a 13-inch laptop and a 6-inch phone.</p>
+    </div>
+    <div>
+      <h4>Vertical padding</h4>
+      <p class="small">88 / 64 at rest, stepping down to 44 / 18 on very short viewports. The label sits at 4.75rem from the top, the number mirrors it on the right.</p>
+      <h4 class="mt-s">Fit guard</h4>
+      <p class="small">If a band's content is taller than its padded height, the inner block scales down — never below 0.7 — Past that, the band grows beyond 100dvh and snapping drops to proximity, so nothing clips at 200% zoom or large text.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt"></div>
+
+  <div class="cols">
+    <div>
+      <h4>Spacing scale</h4>
+      <table>
+        <thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Use</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">xs</td><td class="mono">4px</td><td>Tag internals</td></tr>
+          <tr><td class="mono">sm</td><td class="mono">8px</td><td>Icon gaps</td></tr>
+          <tr><td class="mono">md</td><td class="mono">12px</td><td>Button rows</td></tr>
+          <tr><td class="mono">lg</td><td class="mono">16px</td><td>Grid gutters</td></tr>
+          <tr><td class="mono">xl</td><td class="mono">24px</td><td>Card padding</td></tr>
+          <tr><td class="mono">2xl</td><td class="mono">32px</td><td>Large card padding</td></tr><tr><td class="mono">3xl</td><td class="mono">64px</td><td>Section beats</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h4>Breakpoints</h4>
+      <table>
+        <thead><tr><th scope="col">Query</th><th scope="col">What changes</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">≤ 900px</td><td>Single column; cards 32→24px</td></tr>
+          <tr><td class="mono">≤ 640px</td><td>Work rows become horizontal strips</td></tr>
+          <tr><td class="mono">≤ 560px</td><td>Tiles stack; type steps down</td></tr>
+          <tr><td class="mono">≤ 360px</td><td>Tightest CTA and footer spacing</td></tr>
+          <tr><td class="mono">h ≤ 760/620/520</td><td>Vertical padding and chrome shrink in three steps</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+  <p class="small"><b>Rule of the deck:</b> if a component only exists to fill space between sections, it doesn't exist. Sections touch. Colour does the dividing.</p>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>07 / 12</span></div>
+</section>
+
+<!-- ============================ 08 SHAPE ============================ -->
+<section class="page" id="p8">
+  <div class="run"><span>06 — Shape &amp; elevation</span><span>Brand &amp; Interface System</span></div>
+  <h2>The border is<br>the elevation.</h2>
+  <p class="lead mt-s">There are no shadows in this system. A 2px ink outline does all the lifting — it is what makes every surface read as a sticker rather than a pane of glass.</p>
+
+  <div class="cols3 mt">
+    <div class="mock" style="border-radius:99px;display:grid;place-items:center;height:34mm">
+      <div style="text-align:center"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15pt;letter-spacing:-.03em">99</div><div class="small">pill</div></div>
+    </div>
+    <div class="mock" style="border-radius:8mm;display:grid;place-items:center;height:34mm;background:#e9c0e9">
+      <div style="text-align:center"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15pt;letter-spacing:-.03em">32</div><div class="small">cards</div></div>
+    </div>
+    <div class="mock" style="border-radius:4mm;display:grid;place-items:center;height:34mm;background:#d2e823">
+      <div style="text-align:center"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15pt;letter-spacing:-.03em">16</div><div class="small">buttons</div></div>
+    </div>
+  </div>
+
+  <div class="cols mt">
+    <div>
+      <h4>Radius set — four values, no others</h4>
+      <table>
+        <thead><tr><th scope="col">Surface</th><th scope="col">Radius</th></tr></thead>
+        <tbody>
+          <tr><td>Chrome / pills / tags</td><td class="mono">99px</td></tr>
+          <tr><td>Cards, tiles, works, CTA card</td><td class="mono">32px</td></tr>
+          <tr><td>Cards and compact rows, ≤900px</td><td class="mono">24px</td></tr>
+          
+          <tr><td>Buttons, menu rows</td><td class="mono">16px</td></tr>
+          
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h4>Outline</h4>
+      <p class="small"><span class="mono">--stroke: 2px solid #000</span>, applied on every card, tile, button and pill. On the darkest bands the stroke stays black — the fill provides the contrast, never a white outline.</p>
+      <h4 class="mt-s">No exceptions</h4>
+      <p class="small">No blur behind cards, no inner shadow, no glassmorphism. The only blur in the system is the fixed menu frost, and that is a documented state (page 11).</p>
+    </div>
+  </div>
+
+  <div class="dd mt-s">
+    <div class="col do">
+      <div class="hd">Do</div>
+      <div class="bd"><ul>
+        <li>Give every new surface the same 2px ink stroke</li>
+        <li>Let colour contrast carry hierarchy inside a card</li>
+        <li>Keep radius proportional to area — bigger surface, bigger curve</li>
+      </ul></div>
+    </div>
+    <div class="col dont">
+      <div class="hd">Don't</div>
+      <div class="bd"><ul>
+        <li>Add <span class="mono">box-shadow</span> to imply depth</li>
+        <li>Outline a surface with 1px — only dividers inside tables and lists are hairlines</li>
+        <li>Round a button to 32px to match a card</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>08 / 12</span></div>
+</section>
+
+<!-- ============================ 09 COMPONENTS ============================ -->
+<section class="page" id="p9">
+  <div class="run"><span>07 — Components</span><span>Brand &amp; Interface System</span></div>
+  <h2>Buttons, cards,<br>and their jobs.</h2>
+  <p class="lead mt-s">Two buttons, four surfaces, one icon language. Nothing gets a new component until it can be described as one of these.</p>
+
+  <div class="cols mt">
+    <div class="mock">
+      <div class="mock-label">Primary — Start a project</div>
+      <span class="btn btn-lime">Start a project</span>
+      <p class="small" style="margin-top:4mm">Lime fill, ink type, 16px radius, 2px stroke. Deliberately larger than everything beside it: 32px type, padding <span class="mono">clamp(26px,4.4vh,36px) 56px</span>. Hover lifts 2px, active drops 2px.</p>
+    </div>
+    <div class="mock">
+      <div class="mock-label">Secondary — See the work</div>
+      <span class="btn btn-ghost">See the work</span>
+      <p class="small" style="margin-top:4mm">Transparent fill, ink type and stroke, same 16px radius. Sits on the same baseline as the primary — the row is <span class="mono">align-items:flex-end</span>, so a size difference never breaks the line.</p>
+    </div>
+  </div>
+
+  <div class="cols3 mt-s">
+    <div class="mock" style="background:#fff">
+      <div class="mock-label">Tile · stat</div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:20pt;letter-spacing:-.03em;line-height:1">8+</div>
+      <div class="small">Years of practice</div>
+    </div>
+    <div class="mock" style="background:#780016;color:#fff">
+      <div class="mock-label">Work card</div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:11pt;letter-spacing:-.02em">Field Notes</div>
+      <div class="small" style="color:#fff">Editorial platform</div>
+    </div>
+    <div class="mock" style="background:#2665d6;color:#fff">
+      <div class="mock-label">Scene card</div>
+      <div style="font-size:17pt">◆</div>
+      <div class="small" style="color:#fff">WebGL scene</div>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+
+  <table>
+    <thead><tr><th scope="col">Component</th><th scope="col">Fill</th><th scope="col">Stroke</th><th scope="col">Radius</th><th scope="col">Padding</th></tr></thead>
+    <tbody>
+      <tr><td>Primary button</td><td>Lime</td><td>2px ink</td><td class="mono">16px</td><td class="mono">26–36 / 56</td></tr>
+      <tr><td>Secondary button</td><td>None</td><td>2px ink</td><td class="mono">16px</td><td class="mono">13–18 / 28</td></tr>
+      <tr><td>Card / tile</td><td>White or band</td><td>2px ink</td><td class="mono">32px</td><td class="mono">24 · 16 compact</td></tr>
+      <tr><td>Work card</td><td>Brand fill</td><td>2px ink</td><td class="mono">32px</td><td class="mono">24 · 16 compact</td></tr>
+      <tr><td>Chrome pill</td><td>Chameleon</td><td>2px current</td><td class="mono">99px</td><td class="mono">0 · 42px box</td></tr>
+      <tr><td>Menu row</td><td>Chameleon when active</td><td>2px ink</td><td class="mono">16px</td><td class="mono">16 / 18</td></tr>
+    </tbody>
+  </table>
+
+  <p class="small mt-s"><b>States:</b> hover lifts 2px and press settles 2px; the primary keeps its lime, the secondary darkens to <span class="mono">rgba(0,0,0,.08)</span>. Focus-visible is a 3px ring in the band's ink, 4px off the edge. Disabled drops stroke and type to 45% ink, loses the lift, and stays focusable via <span class="mono">aria-disabled</span>. Touch devices skip hover.</p>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>09 / 12</span></div>
+</section>
+
+<!-- ============================ 10 MOTION ============================ -->
+<section class="page" id="p10">
+  <div class="run"><span>08 — Motion</span><span>Brand &amp; Interface System</span></div>
+  <h2>Motion explains<br>or confirms.</h2>
+  <p class="lead mt-s">Nothing moves decoratively. Every animation either explains where content came from or confirms that an input landed.</p>
+
+  <h4 class="mt">The intro — 3.68s, once per session, skippable</h4>
+  <div class="tl">
+    <div class="t1">Shapes<br>0–1.15</div>
+    <div class="t2">Logo<br>1.15–2.20</div>
+    <div class="t3">Dot<br>2.20–2.80</div>
+    <div class="t4">Line → flood<br>2.80–3.68</div>
+  </div>
+  <div class="tl-scale"><span>0s</span><span>1.15</span><span>2.80</span><span>3.68s</span></div>
+
+  <p class="small">Five clip-path shapes swap every 287.5ms, each rotating 20° as it lands: circle → triangle → hexagon → square → plus. The lockup compresses to an 11px dot, the dot stretches into a full-height line, and the line scales out to flood the viewport in the band's own colour. The overlay is lifted on the same frame the flood completes — because the flood is the section colour, there is no flash and no second curtain. Any key or tap skips it; under reduced motion it becomes a 300ms fade.</p>
+
+  <div class="rule-thin mt-s"></div>
+
+  <div class="cols">
+    <div>
+      <h4>Section reveal</h4>
+      <p class="small">The first time a band enters view, its blocks rise 26px and fade in: 0.8s on <span class="mono">--out</span>, 75ms stagger. Once per section per page load — returning to a section never replays it.</p>
+      <p class="small">The hero is excluded from the observer and is cued by the intro's handover, so it rises exactly as the page is revealed.</p>
+      <h4 class="mt-s">Deck colour</h4>
+      <p class="small">The page background cross-fades over 500ms while the band scrolls in. Scroll snapping itself is instant — the deck never animates a landing.</p>
+    </div>
+    <div>
+      <h4>Feedback</h4>
+      <p class="small">The music toggle pops its icon 1 → 1.3 → 0.92 → 1 over 440ms on <span class="mono">cubic-bezier(.34,1.56,.64,1)</span>. The burger uses the same spring over 520ms. Both are confirmations, not decoration.</p>
+      <h4 class="mt-s">Durations</h4>
+      <table>
+        <thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Use</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">micro</td><td class="mono">200ms</td><td>Hover, press</td></tr>
+          <tr><td class="mono">ui</td><td class="mono">280–520ms</td><td>Pop, menu rows</td></tr>
+          <tr><td class="mono">band</td><td class="mono">500ms</td><td>Background colour</td></tr>
+          <tr><td class="mono">reveal</td><td class="mono">800ms</td><td>Section entrance</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+  <div class="cols3">
+    <div><h4>Three curves</h4><p class="small mono">--ease: cubic-bezier(.25,.1,.25,1)<br>--out: cubic-bezier(.215,.61,.355,1)<br>--spring: cubic-bezier(.34,1.56,.64,1)</p></div>
+    <div><h4>Transform only</h4><p class="small">Animate transform, opacity, clip-path and colour. Never animate layout — the deck's snap maths needs stable geometry, so the flood scales rather than widens.</p></div>
+    <div><h4>Reduced motion</h4><p class="small">Every reveal, pop and transition is disabled under <span class="mono">prefers-reduced-motion</span>. Content is visible from the first frame.</p></div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>10 / 12</span></div>
+</section>
+
+<!-- ============================ 11 CHROME ============================ -->
+<section class="page" id="p11">
+  <div class="run"><span>09 — Chrome &amp; navigation</span><span>Brand &amp; Interface System</span></div>
+  <h2>Fixed controls<br>borrow the band.</h2>
+  <p class="lead mt-s">Three fixed elements sit above the deck: the logo, the music toggle, and the menu. All of them are monochrome, all of them borrow the current band.</p>
+
+  <div class="cols mt">
+    <div class="mock">
+      <div class="mock-label">Music toggle</div>
+      <div style="display:flex;gap:4mm;align-items:center">
+        <span class="pill-icon" style="background:#f5f5f3">♪</span>
+        <span class="pill-icon" style="background:#000;color:#f5f5f3">♪</span>
+      </div>
+      <p class="small" style="margin-top:4mm">Off = band fill with contrast ink. On = the pair inverted. The glyph is a hand-drawn two-note mark at 2px; a diagonal slash fades out when playing. 42px, dropping to 38 / 34 / 30 on short viewports; the hit area stays 44px.</p>
+    </div>
+    <div class="mock">
+      <div class="mock-label">Menu button</div>
+      <div style="display:flex;gap:4mm;align-items:center">
+        <span class="pill-icon" style="background:#f5f5f3;flex-direction:column;gap:1.1mm">
+          <i style="display:block;width:6mm;height:.5mm;background:currentColor;border-radius:2px"></i>
+          <i style="display:block;width:4mm;height:.5mm;background:currentColor;border-radius:2px"></i>
+          <i style="display:block;width:6mm;height:.5mm;background:currentColor;border-radius:2px"></i>
+        </span>
+        <span class="pill-icon" style="background:#000;color:#f5f5f3">✕</span>
+      </div>
+      <p class="small" style="margin-top:4mm">Three rounded strokes, the middle one short — that asymmetry is the “cute”. On open they fold into a cross, the button inverts, and it pops on the spring curve every tap.</p>
+    </div>
+  </div>
+
+  <div class="cols mt-s">
+    <div>
+      <h4>Section menu</h4>
+      <p class="small">Mobile only (≤900px). It opens over a 50% paper frost with an 18px backdrop blur — everything behind it reads as blurred out, but the colour still shows through. Rows enter in a 55ms stagger.</p>
+      <p class="small">Each row is a real anchor, so the deck's own snap and paint logic runs. The row for the current band is filled with that band's colour and its contrast ink; every other row stays black.</p>
+    </div>
+    <div>
+      <h4>Logo</h4>
+      <p class="small">Space Grotesk 700: “amir” at 0.625rem, “STUDIO” at 1.25rem, ™ at 0.625rem, with a 0.625rem tagline — nothing in the lockup drops below 10px. Set in <span class="mono">--chrome-fg</span> like the rest of the chrome. A difference blend looks monochrome on Paper but turns orange on Cobalt and cyan on Maroon.</p>
+      <h4 class="mt-s">Clearance</h4>
+      <p class="small">Fixed chrome owns a lane. If a band's copy would slide under the music button, that band's top padding is nudged — never the button's position.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+  <p class="small"><b>Opening and closing:</b> the frost fades over 440ms while rows rise; closing reverses with no stagger, so dismissal is always faster than arrival. Escape closes it and returns focus to the button. While open, the menu owns the arrow keys, keeps focus inside, and the deck behind it is inert.</p>
+
+  <div class="foot"><span>amirSTUDIO™</span><span>11 / 12</span></div>
+</section>
+
+<!-- ============================ 12 TOKENS ============================ -->
+<section class="page" id="p12">
+  <div class="run"><span>10 — Tokens &amp; access</span><span>Brand &amp; Interface System</span></div>
+  <h2>The source<br>of truth.</h2>
+
+  <div class="cols mt-s">
+    <div>
+      <h4>CSS variables</h4>
+      <div class="code">:root{
+  /* surfaces */
+  --paper:#F5F5F3; --white:#ffffff;
+  --ink:#000000; --sage:#676b5f;
+
+  /* bands */
+  --lavender:#e9c0e9; --cobalt:#2665d6;
+  --maroon:#780016;   --leaf:#ebffc5;
+
+  /* accents */
+  --lime:#d2e823;  --forest:#254f1a;
+  --mustard:#d6a337; --midnight:#1e2330;
+
+  /* shape */
+  --stroke:2px solid #000;
+  --r-pill:99px; --r-card:32px;
+  --r-card-sm:24px; --r-btn:16px;
+
+  /* motion */
+  --ease:cubic-bezier(.25,.1,.25,1);
+  --out:cubic-bezier(.215,.61,.355,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+
+  /* live chrome */
+  --chrome-bg:#f5f5f3;
+  --chrome-fg:#000000;
+}</div>
+    </div>
+    <div>
+      <h4>Ink resolver</h4>
+      <div class="code">const lin = c =&gt; {
+  c = parseInt(c, 16) / 255;
+  return c &lt;= 0.04045 ? c / 12.92
+                      : Math.pow((c + .055) / 1.055, 2.4);
+};
+
+const L = hex =&gt;
+  .2126 * lin(hex.slice(1,3)) +
+  .7152 * lin(hex.slice(3,5)) +
+  .0722 * lin(hex.slice(5,7));
+
+const ink = hex =&gt;
+  L(hex) &gt; 0.179 ? '#000000' : '#ffffff';</div>
+      <h4 class="mt-s">Band contract</h4>
+      <div class="code">&lt;section data-bg="#2665d6"&gt;</div>
+      <p class="small" style="margin-top:2mm">Paint reads <span class="mono">data-bg</span>, writes <span class="mono">--chrome-bg</span> / <span class="mono">--chrome-fg</span>, and emits <span class="mono">amir:section</span> with the id. Chrome and menu only listen.</p>
+    </div>
+  </div>
+
+  <div class="rule-thin mt-s"></div>
+
+  <div class="cols">
+    <div>
+      <h4>Accessibility floor</h4>
+      <ul class="clean">
+        <li class="on">Focus is a 3px ring, offset 4px, in the band's ink on every control. Lime fails 3 : 1 on three of five bands.</li>
+        <li class="on">Every band clears 4.5:1 for body text with its resolved ink.</li>
+        <li class="on">Reduced motion removes every entrance, pop and colour transition, and turns the intro into a fade.</li>
+        <li class="on">Menu is a real <span class="mono">nav</span> with <span class="mono">aria-expanded</span>, <span class="mono">aria-controls</span> and a current-row marker.</li>
+        <li class="on">Hit areas stay ≥ 44px: chrome gets an invisible halo that grows as the visible control shrinks.</li>
+        <li class="on">The music toggle is <span class="mono">aria-pressed</span> and never autoplays.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Pre-flight</h4>
+      <ul class="clean">
+        <li>Is every surface stroked at 2px?</li>
+        <li>Is there exactly one lime object on screen?</li>
+        <li>Does the chrome read on all five bands?</li>
+        <li>Does anything clip below 0.7 scale?</li>
+        <li>Do the buttons share a baseline?</li>
+        <li>Does it still work with motion turned off?</li>
+      </ul>
+      <div class="mt-s" style="border:2px solid #000;border-radius:4mm;padding:3mm 4mm;background:#d2e823">
+        <div class="small" style="font-weight:700;letter-spacing:.02em">If it needs a shadow to work, it isn't finished.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>amirSTUDIO™ — v1.1 · October 2026</span><span>12 / 12</span></div>
+</section>
+
+</main>
+</body>
+</html>

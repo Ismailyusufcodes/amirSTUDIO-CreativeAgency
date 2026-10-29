@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snap Deck — Full-Screen Scroll with Dynamic Section Colour</title>
+<meta name="description" content="A dependency-free proof of concept: 100dvh snap sections, one gesture per section, and a background colour that fades when the active section changes.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. LAYOUT — every section is exactly one viewport, nothing scrolls freely
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --blue:#061492;
+  --coral:#ff7a5c;
+  --charcoal:#1e2330;
+  --ink:#0a0a0a;
+  --paper:#ffffff;
+  --muted:rgba(255,255,255,.62);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+html,body{height:100%;overflow:hidden}
+
+body{
+  width:100vw;
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  color:var(--paper);
+  background:var(--blue);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* The deck is the scroll container. `background-color` lives here so every
+   section can stay transparent and the colour can fade underneath them. */
+.deck{
+  position:relative;
+  width:100%;
+  height:100vh;
+  height:100dvh;              /* mobile browser chrome is accounted for */
+  overflow-y:auto;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  overscroll-behavior-y:contain;
+  background-color:var(--blue);
+  transition:background-color .5s ease;   /* the fade, not a hard switch */
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.deck::-webkit-scrollbar{display:none;width:0;height:0}
+
+.section{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(16px,3vh,32px);
+  padding:clamp(56px,9vh,96px) 6vw;
+  overflow:hidden;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;    /* one section per gesture, even on a fling */
+  text-align:center;
+}
+
+/* ============================================================
+   2. CONTENT
+   ============================================================ */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  opacity:.7;
+}
+.eyebrow::before{
+  content:"";width:26px;height:1px;background:currentColor;opacity:.6;
+}
+.title{
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;
+  font-size:clamp(2.1rem,min(7.4vw,12.5vh),7rem);
+  line-height:.92;
+  letter-spacing:-.045em;
+}
+.title em{font-style:normal;opacity:.45}
+.body{
+  max-width:44ch;
+  font-size:clamp(.95rem,min(1.4vw,2vh),1.15rem);
+  line-height:1.6;
+  letter-spacing:-.01em;
+  color:var(--muted);
+}
+.swatches{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:clamp(4px,1.6vh,14px)}
+.swatch{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:999px;
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.78);
+}
+.swatch i{width:8px;height:8px;border-radius:50%;display:block}
+
+/* section 2 is light — flip the ink */
+.section[data-bg="#ff7a5c"]{color:#190a04}
+.section[data-bg="#ff7a5c"] .body{color:rgba(25,10,4,.72)}
+.section[data-bg="#ff7a5c"] .swatch{border-color:rgba(0,0,0,.22);color:rgba(25,10,4,.7)}
+.section[data-bg="#ff7a5c"] .eyebrow{opacity:.85}
+
+/* corner index */
+.idx{
+  position:absolute;top:clamp(18px,3.4vh,34px);right:6vw;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:12px;letter-spacing:.2em;
+  opacity:.5;
+}
+.ghost-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.ghost{
+  position:absolute;left:50%;bottom:0;transform:translate(-50%,22%);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(9rem,34vw,26rem);
+  font-weight:700;line-height:1;
+  letter-spacing:-.06em;
+  opacity:.045;
+  white-space:nowrap;
+}
+
+/* ============================================================
+   3. CHROME — brand mark, colour readout, pill nav
+   ============================================================ */
+.brand{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(14px,2.6vh,26px) 6vw;
+  font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:#fff;
+  mix-blend-mode:difference;
+  pointer-events:none;
+}
+.brand span:last-child{opacity:.55}
+
+.readout{
+  position:fixed;z-index:20;left:6vw;bottom:clamp(16px,3vh,30px);
+  display:flex;align-items:center;gap:10px;
+  font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;
+  mix-blend-mode:difference;
+  pointer-events:none;
+}
+.readout b{font-weight:600;letter-spacing:.1em}
+
+.nav{
+  position:fixed;z-index:30;left:50%;bottom:clamp(14px,2.6vh,28px);
+  transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;
+  padding:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.26);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
+}
+.nav button{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;
+  border-radius:999px;
+  font-family:inherit;font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.82);
+  transition:background-color .28s var(--ease),color .28s var(--ease);
+}
+.nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+.nav button .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:currentColor;opacity:.5;
+  transition:opacity .28s var(--ease),transform .28s var(--ease);
+}
+.nav button[aria-current="true"]{
+  background:#fff;color:#0a0a0a;
+}
+.nav button[aria-current="true"] .dot{opacity:1;transform:scale(1.15)}
+.nav button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+@media (max-width:640px){
+  .nav{gap:2px;padding:5px}
+  .nav button{padding:9px 11px;font-size:10px;letter-spacing:.06em}
+  .nav button span.label{display:none}
+  .nav button[aria-current="true"] span.label{display:inline}
+  .readout{display:none}
+  .brand span:last-child{display:none}
+}
+
+/* ============================================================
+   4. ACCESSIBILITY — no forced snapping, no animated colour
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .deck{
+    scroll-snap-type:none;
+    scroll-behavior:auto;
+    transition:none;
+  }
+  .nav button,.nav button .dot{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <span>Snap Deck — Demo</span>
+  <span>3 sections / zero dependencies</span>
+</div>
+
+<main class="deck" id="deck">
+
+  <!-- 01 -->
+  <section class="section" id="one" data-bg="#061492" data-label="Deep Blue">
+    <div class="idx">01 / 03</div>
+    <div class="ghost-wrap" aria-hidden="true"><span class="ghost">01</span></div>
+    <p class="eyebrow">Section one</p>
+    <h1 class="title">Deep<br><em>Blue.</em></h1>
+    <p class="body">Full-viewport sections, one gesture per snap, and a background colour that cross-fades behind the content as soon as the next section locks in.</p>
+    <div class="swatches">
+      <span class="swatch"><i style="background:#061492"></i>#061492</span>
+      <span class="swatch">100dvh</span>
+      <span class="swatch">y mandatory</span>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="section" id="two" data-bg="#ff7a5c" data-label="Coral">
+    <div class="idx">02 / 03</div>
+    <div class="ghost-wrap" aria-hidden="true"><span class="ghost">02</span></div>
+    <p class="eyebrow">Section two</p>
+    <h2 class="title">Coral<br><em>Signal.</em></h2>
+    <p class="body">The colour does not follow the pointer or fire on hover. It is bound to the active section, so the fade lands exactly when the section does.</p>
+    <div class="swatches">
+      <span class="swatch"><i style="background:#ff7a5c"></i>#FF7A5C</span>
+      <span class="swatch">0.5s ease</span>
+      <span class="swatch">scroll-snap-stop: always</span>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="section" id="three" data-bg="#1e2330" data-label="Charcoal">
+    <div class="idx">03 / 03</div>
+    <div class="ghost-wrap" aria-hidden="true"><span class="ghost">03</span></div>
+    <p class="eyebrow">Section three</p>
+    <h2 class="title">Charcoal<br><em>Room.</em></h2>
+    <p class="body">Wheel, trackpad, keyboard, touch and the pill nav all resolve to the same snap points. Reduced-motion users get native scrolling instead.</p>
+    <div class="swatches">
+      <span class="swatch"><i style="background:#1e2330"></i>#1E2330</span>
+      <span class="swatch">wheel + keys</span>
+      <span class="swatch">prefers-reduced-motion</span>
+    </div>
+  </section>
+
+</main>
+
+<div class="readout">Stage <b id="readout">#061492</b></div>
+
+<nav class="nav" id="nav" aria-label="Sections">
+  <button type="button" data-target="one" aria-current="true"><span class="dot"></span><span class="label">Deep Blue</span></button>
+  <button type="button" data-target="two"><span class="dot"></span><span class="label">Coral</span></button>
+  <button type="button" data-target="three"><span class="dot"></span><span class="label">Charcoal</span></button>
+</nav>
+
+<script>
+/* ============================================================
+   SNAP ENGINE
+   - one section per wheel gesture / key press
+   - colour is painted on the stage when a section becomes active
+   - hard settle: never rest between two sections
+   ============================================================ */
+(function () {
+  var deck = document.getElementById('deck');
+  var nav = document.getElementById('nav');
+  var readout = document.getElementById('readout');
+  if (!deck) return;
+
+  var sections = Array.prototype.slice.call(deck.querySelectorAll('.section'));
+  var buttons = Array.prototype.slice.call(nav.querySelectorAll('button'));
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var LAST = sections.length - 1;
+
+  var active = 0;
+  var navigating = false;
+  var navTimer = null;
+  var scrollTimer = null;
+
+  function paint(section, instant) {
+    var bg = section.getAttribute('data-bg');
+    if (!bg) return;
+    if (instant) {
+      var prev = deck.style.transition;
+      deck.style.transition = 'none';
+      deck.style.backgroundColor = bg;
+      void deck.offsetHeight;          /* force the paint before restoring */
+      deck.style.transition = prev;
+    } else {
+      deck.style.backgroundColor = bg;
+    }
+    if (readout) readout.textContent = bg.toUpperCase();
+    document.body.style.backgroundColor = bg;
+    buttons.forEach(function (b) {
+      b.setAttribute('aria-current', b.getAttribute('data-target') === section.id ? 'true' : 'false');
+    });
+  }
+
+  function goTo(i, instant) {
+    i = Math.max(0, Math.min(LAST, i));
+    active = i;
+    var top = sections[i].offsetTop;
+    if (instant || reduce.matches) {
+      var prev = deck.style.scrollBehavior;
+      deck.style.scrollBehavior = 'auto';
+      deck.scrollTop = top;
+      deck.style.scrollBehavior = prev;
+      navigating = false;
+      clearTimeout(navTimer);
+    } else {
+      navigating = true;
+      clearTimeout(navTimer);
+      navTimer = setTimeout(function () { navigating = false; }, 1400);
+      deck.scrollTo({ top: top, behavior: 'smooth' });
+    }
+    paint(sections[i]);
+  }
+
+  /* --- no wheel hijack: native scrolling runs and CSS snap decides the landing --- */
+
+  /* --- keyboard --- */
+  document.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (e.key === ' ') {
+      if (tag === 'button' || tag === 'a' || tag === 'input' || tag === 'textarea') return;
+      e.preventDefault();
+      if (!reduce.matches) goTo(active + (e.shiftKey ? -1 : 1));
+    } else if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+      e.preventDefault(); goTo(active + 1);
+    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault(); goTo(active - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault(); goTo(LAST);
+    }
+  });
+
+  /* --- pill nav --- */
+  nav.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-target]');
+    if (!btn) return;
+    var i = sections.map(function (s) { return s.id; }).indexOf(btn.getAttribute('data-target'));
+    if (i > -1) goTo(i);
+  });
+
+  /* --- any in-page anchor --- */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    var i = el ? sections.indexOf(el) : -1;
+    if (i > -1) { e.preventDefault(); goTo(i); }
+  });
+
+  /* --- hard settle: if scrolling ever stops between snap points, land it --- */
+  function settle() {
+    if (navigating) return;
+    var h = deck.clientHeight;
+    if (!h) return;
+    var i = Math.max(0, Math.min(LAST, Math.round(deck.scrollTop / h)));
+    active = i;
+    paint(sections[i]);
+  }
+  deck.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(settle, 150);
+  }, { passive: true });
+  deck.addEventListener('scrollend', function () {
+    navigating = false;
+    clearTimeout(navTimer);
+    settle();
+  }, { passive: true });
+
+  /* --- viewport changes re-align to the current section --- */
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { goTo(active, true); }, 150);
+  });
+
+  /* --- deep links --- */
+  function fromHash(instant) {
+    var el = document.getElementById(location.hash.slice(1));
+    var i = el ? sections.indexOf(el) : -1;
+    if (i > -1) goTo(i, instant);
+  }
+  window.addEventListener('hashchange', function () { fromHash(); });
+
+  /* --- boot --- */
+  fromHash(true);
+  goTo(active, true);
+})();
+</script>
+</body>
+</html>
